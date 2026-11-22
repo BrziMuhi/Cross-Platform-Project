@@ -1,13 +1,24 @@
 import PrayerCard from '@/components/PrayerCard';
-import { Spacing } from '@/constants/theme';
+import { FontSize, Radius, Spacing } from '@/constants/theme';
 import { prayers } from '@/data/prayers';
 import { useTheme } from '@/hooks/use-theme';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  const completed = prayers.reduce(
+    (total, prayer) => total + (prayer.completed ? 1 : 0),
+    0
+  );
+
+  const summary = [
+    { label: 'Total', value: prayers.length },
+    { label: 'Completed', value: completed },
+    { label: 'Pending', value: prayers.length - completed },
+  ];
 
   return (
     <ScrollView
@@ -21,9 +32,24 @@ export default function HomeScreen() {
         My Daily Prayers
       </Text>
 
-      <Text style={[styles.count, { color: theme.muted }]}>
-        {prayers.length} prayer records
-      </Text>
+      <View style={styles.summaryRow}>
+        {summary.map((item) => (
+          <View
+            key={item.label}
+            style={[
+              styles.summaryBox,
+              { backgroundColor: theme.card, borderColor: theme.border },
+            ]}
+          >
+            <Text style={[styles.summaryValue, { color: theme.text }]}>
+              {item.value}
+            </Text>
+            <Text style={[styles.summaryLabel, { color: theme.muted }]}>
+              {item.label}
+            </Text>
+          </View>
+        ))}
+      </View>
 
       {prayers.map((prayer) => (
         <PrayerCard key={prayer.id} prayer={prayer} />
@@ -35,14 +61,31 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: Spacing.md,
-    gap: 12,
+    gap: Spacing.md,
   },
   heading: {
-    fontSize: 26,
+    fontSize: FontSize.hero,
     fontWeight: 'bold',
   },
-  count: {
-    fontSize: 16,
-    marginBottom: 8,
+  summaryRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  summaryBox: {
+    flex: 1,
+    minWidth: 0,
+    padding: Spacing.sm,
+    gap: Spacing.xs,
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+  },
+  summaryValue: {
+    fontSize: FontSize.hero,
+    fontWeight: 'bold',
+  },
+  summaryLabel: {
+    fontSize: FontSize.small,
+    textAlign: 'center',
   },
 });
