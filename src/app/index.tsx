@@ -2,12 +2,15 @@ import PrayerCard from '@/components/PrayerCard';
 import { FontSize, Radius, Spacing } from '@/constants/theme';
 import { prayers } from '@/data/prayers';
 import { useTheme } from '@/hooks/use-theme';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const columns = width >= 900 ? 3 : width >= 600 ? 2 : 1;
+  const cardWidth = (width - 2 * Spacing.md - (columns - 1) * Spacing.md) / columns;
 
   const completed = prayers.reduce(
     (total, prayer) => total + (prayer.completed ? 1 : 0),
@@ -51,9 +54,15 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      {prayers.map((prayer) => (
-        <PrayerCard key={prayer.id} prayer={prayer} />
-      ))}
+      <View style={styles.cardGrid}>
+        {prayers.map((prayer) => (
+          <PrayerCard
+            key={prayer.id}
+            prayer={prayer}
+            style={{ width: cardWidth }}
+          />
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -66,6 +75,11 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: FontSize.hero,
     fontWeight: 'bold',
+  },
+  cardGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.md,
   },
   summaryRow: {
     flexDirection: 'row',

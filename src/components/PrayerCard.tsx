@@ -2,12 +2,14 @@ import { FontSize, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { Prayer } from '@/types';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 type PrayerCardProps = {
   prayer: Prayer;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default function PrayerCard({ prayer }: PrayerCardProps) {
+export default function PrayerCard({ prayer, style }: PrayerCardProps) {
   const theme = useTheme();
 
   return (
@@ -17,6 +19,7 @@ export default function PrayerCard({ prayer }: PrayerCardProps) {
         styles.card,
         { backgroundColor: theme.card, borderColor: theme.border },
         pressed && styles.pressed,
+        style,
       ]}
     >
       <View style={styles.imageContainer}>
